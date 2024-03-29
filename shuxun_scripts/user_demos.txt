@@ -1,0 +1,378 @@
+export CUDA_VISIBLE_DEVICES=2,3,4,5,6,7
+export CUDA_VISIBLE_DEVICES=4,5,6,7
+
+cd open_clip/src
+torchrun --nproc_per_node 6 -m training.main \
+    --batch-size 100 \
+    --precision amp \
+    --workers 2 \
+    --save-frequency 1 \
+    --logs="/disk1/shuxun/NFTSearch/models/clip/openclip_finetuning/logs" \
+    --dataset-type csv \
+    --csv-separator="," \
+    --train-data /ShuXun_SSD/NFT1000/_index/NFT1000_img_caption_dict_path_training_dict.csv \
+    --csv-img-key filepath \
+    --csv-caption-key caption \
+    --warmup 1000 \
+    --lr=5e-6 \
+    --wd=0.1 \
+    --epochs=32 \
+    --model ViT-L-14-336 \
+    --pretrained /disk1/shuxun/NFTSearch/models/clip/ViT-L-14-336px.pt
+
+
+
+torchrun --nproc_per_node 6 -m training.main \
+    --batch-size 500 \
+    --precision amp \
+    --workers 2 \
+    --report-to tensorboard \
+    --save-frequency 1 \
+    --logs="/disk1/shuxun/NFTSearch/models/clip/openclip_finetuning/logs" \
+    --dataset-type csv \
+    --csv-separator="," \
+    --train-data /ShuXun_SSD/NFT1000/_index/NFT1000_img_caption_dict_path_training_dict.csv \
+    --csv-img-key filepath \
+    --csv-caption-key caption \
+    --warmup 1000 \
+    --lr=5e-6 \
+    --wd=0.1 \
+    --epochs=32 \
+    --model ViT-B-32 \
+    --pretrained /disk1/shuxun/NFTSearch/models/clip/ViT-B-32.pt
+
+
+torchrun --nproc_per_node 6 -m training.main \
+    --batch-size 500 \
+    --precision amp \
+    --workers 2 \
+    --report-to tensorboard \
+    --save-frequency 1 \
+    --logs="/disk1/shuxun/NFTSearch/models/clip/openclip_finetuning/logs" \
+    --dataset-type csv \
+    --csv-separator="," \
+    --train-data /ShuXun_SSD/NFT1000/_index/NFT100_mini_img_caption_dict_training_dict.csv \
+    --csv-img-key filepath \
+    --csv-caption-key caption \
+    --warmup 400 \
+    --lr=5e-6 \
+    --wd=0.1 \
+    --epochs=32 \
+    --model ViT-B-32 \
+    --pretrained /disk1/shuxun/NFTSearch/models/clip/ViT-B-32.pt
+
+
+torchrun --nproc_per_node 6 -m training.main \
+    --batch-size 30 \
+    --precision amp \
+    --workers 2 \
+    --report-to tensorboard \
+    --save-frequency 1 \
+    --logs="/disk1/shuxun/NFTSearch/models/clip/openclip_finetuning/logs" \
+    --dataset-type csv \
+    --csv-separator="," \
+    --train-data /ShuXun_SSD/NFT1000/_index/NFT1000_mini_img_caption_dict_path_training_dict.csv \
+    --csv-img-key filepath \
+    --csv-caption-key caption \
+    --warmup 500 \
+    --lr=5e-6 \
+    --wd=0.1 \
+    --epochs=32 \
+    --model ViT-L-14-336 \
+    --pretrained /disk1/shuxun/NFTSearch/models/clip/ViT-L-14-336px.pt
+
+
+torchrun --nproc_per_node 6 -m training.main \
+    --batch-size 50 \
+    --precision amp \
+    --workers 8 \
+    --report-to tensorboard \
+    --save-frequency 1 \
+    --logs="/disk1/shuxun/NFTSearch/models/clip/openclip_finetuning/logs" \
+    --dataset-type csv \
+    --csv-separator="," \
+    --train-data /ShuXun_SSD/NFT1000/_index/NFT1000_mini_img_caption_dict_path_training_dict.csv \
+    --csv-img-key filepath \
+    --csv-caption-key caption \
+    --warmup 1000 \
+    --lr=5e-6 \
+    --wd=0.1 \
+    --epochs=32 \
+    --model ViT-L-14 \
+    --pretrained /disk1/shuxun/NFTSearch/models/clip/ViT-L-14.pt
+
+
+torchrun --nproc_per_node 6 -m training.main \
+    --batch-size 50 \
+    --precision amp \
+    --workers 8 \
+    --report-to tensorboard \
+    --save-frequency 1 \
+    --logs="/disk1/shuxun/NFTSearch/models/clip/openclip_finetuning/logs" \
+    --dataset-type csv \
+    --csv-separator="," \
+    --train-data /ShuXun_SSD/NFT1000/_index/NFT100_mini_img_caption_dict_training_dict.csv \
+    --csv-img-key filepath \
+    --csv-caption-key caption \
+    --warmup 1000 \
+    --lr=5e-6 \
+    --wd=0.1 \
+    --epochs=32 \
+    --model ViT-L-14 \
+    --pretrained /disk1/shuxun/NFTSearch/models/clip/ViT-L-14.pt
+
+
+torchrun --nproc_per_node 6 -m training.main \
+    --batch-size 50 \
+    --precision amp \
+    --workers 10 \
+    --report-to tensorboard \
+    --save-frequency 1 \
+    --logs="/disk1/shuxun/NFTSearch/models/clip/openclip_finetuning/logs" \
+    --dataset-type csv \
+    --csv-separator="," \
+    --train-data /ShuXun_SSD/NFT1000/_index/NFT1000_img_caption_dict_path_training_dict.csv \
+    --csv-img-key filepath \
+    --csv-caption-key caption \
+    --warmup 10000 \
+    --lr=5e-6 \
+    --wd=0.1 \
+    --epochs=32 \
+    --model ViT-L-14 \
+    --pretrained /disk1/shuxun/NFTSearch/models/clip/ViT-L-14.pt
+
+finetune EVA02_CLIP NFT1000 （done）
+export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6
+torchrun --nproc_per_node 7 -m training.main \
+    --batch-size 30 \
+    --precision amp \
+    --workers 10 \
+    --report-to tensorboard \
+    --save-frequency 1 \
+    --logs="/disk1/shuxun/NFTSearch/models/clip/openclip_finetuning/logs" \
+    --dataset-type csv \
+    --csv-separator="," \
+    --train-data /ShuXun_SSD/NFT1000/_index/NFT1000_img_caption_dict_path_training_dict.csv \
+    --csv-img-key filepath \
+    --csv-caption-key caption \
+    --warmup 10000 \
+    --lr=5e-6 \
+    --wd=0.1 \
+    --epochs=32 \
+    --model EVA02-L-14 \
+    --pretrained "/home/shuxun/.cache/huggingface/hub/models--timm--eva02_large_patch14_clip_224.merged2b_s4b_b131k/open_clip_pytorch_model.bin"
+
+finetune EVA02_CLIP NFT1000_mini
+export CUDA_VISIBLE_DEVICES=2,3,4,5,6,7
+torchrun --nproc_per_node 6 -m training.main \
+    --batch-size 20 \
+    --precision amp \
+    --workers 10 \
+    --report-to tensorboard \
+    --save-frequency 1 \
+    --logs="/disk1/shuxun/NFTSearch/models/clip/openclip_finetuning/logs" \
+    --dataset-type csv \
+    --csv-separator="," \
+    --train-data /ShuXun_SSD/NFT1000/_index/NFT1000_mini_img_caption_dict_path_training_dict.csv \
+    --csv-img-key filepath \
+    --csv-caption-key caption \
+    --warmup 10000 \
+    --lr=5e-6 \
+    --wd=0.1 \
+    --epochs=32 \
+    --model EVA02-L-14 \
+    --pretrained "/home/shuxun/.cache/huggingface/hub/models--timm--eva02_large_patch14_clip_224.merged2b_s4b_b131k/open_clip_pytorch_model.bin"
+
+
+finetune EVA02_CLIP NFT100_mini (done)
+export CUDA_VISIBLE_DEVICES=2,3,4,5,6,7
+torchrun --nproc_per_node 6 -m training.main \
+    --batch-size 20 \
+    --precision amp \
+    --workers 10 \
+    --report-to tensorboard \
+    --save-frequency 1 \
+    --logs="/disk1/shuxun/NFTSearch/models/clip/openclip_finetuning/logs" \
+    --dataset-type csv \
+    --csv-separator="," \
+    --train-data /ShuXun_SSD/NFT1000/_index/NFT100_mini_img_caption_dict_training_dict.csv \
+    --csv-img-key filepath \
+    --csv-caption-key caption \
+    --warmup 10000 \
+    --lr=5e-6 \
+    --wd=0.1 \
+    --epochs=32 \
+    --model EVA02-L-14 \
+    --pretrained "/home/shuxun/.cache/huggingface/hub/models--timm--eva02_large_patch14_clip_224.merged2b_s4b_b131k copy/open_clip_pytorch_model.bin"
+
+
+finetune META_CLIP NFT1000 （done）
+export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6
+torchrun --nproc_per_node 7 -m training.main \
+    --batch-size 50 \
+    --precision amp \
+    --workers 10 \
+    --report-to tensorboard \
+    --save-frequency 1 \
+    --logs="/disk1/shuxun/NFTSearch/models/clip/openclip_finetuning/logs" \
+    --dataset-type csv \
+    --csv-separator="," \
+    --train-data /ShuXun_SSD/NFT1000/_index/NFT1000_img_caption_dict_path_training_dict.csv \
+    --csv-img-key filepath \
+    --csv-caption-key caption \
+    --warmup 10000 \
+    --lr=5e-6 \
+    --wd=0.1 \
+    --epochs=32 \
+    --model ViT-L-14 \
+    --pretrained /disk1/shuxun/NFTSearch/models/clip/l14_400m.pt
+
+finetune META_CLIP NFT1000 （done）
+export CUDA_VISIBLE_DEVICES=2,3,4,5,6,7
+torchrun --nproc_per_node 6 -m training.main \
+    --batch-size 50 \
+    --precision amp \
+    --workers 10 \
+    --report-to tensorboard \
+    --save-frequency 1 \
+    --logs="/disk1/shuxun/NFTSearch/models/clip/openclip_finetuning/logs" \
+    --dataset-type csv \
+    --csv-separator="," \
+    --train-data /ShuXun_SSD/NFT1000/_index/NFT1000_mini_img_caption_dict_path_training_dict.csv \
+    --csv-img-key filepath \
+    --csv-caption-key caption \
+    --warmup 10000 \
+    --lr=5e-6 \
+    --wd=0.1 \
+    --epochs=32 \
+    --model ViT-L-14 \
+    --pretrained /disk1/shuxun/NFTSearch/models/clip/l14_400m.pt
+
+finetune META_CLIP NFT100_mini （doing）
+export CUDA_VISIBLE_DEVICES=2,3,4,5,6,7
+torchrun --nproc_per_node 6 -m training.main \
+    --batch-size 50 \
+    --precision amp \
+    --workers 10 \
+    --report-to tensorboard \
+    --save-frequency 1 \
+    --logs="/disk1/shuxun/NFTSearch/models/clip/openclip_finetuning/logs" \
+    --dataset-type csv \
+    --csv-separator="," \
+    --train-data /ShuXun_SSD/NFT1000/_index/NFT100_mini_img_caption_dict_test_dict.csv \
+    --csv-img-key filepath \
+    --csv-caption-key caption \
+    --warmup 1000 \
+    --lr=5e-6 \
+    --wd=0.1 \
+    --epochs=32 \
+    --model ViT-L-14 \
+    --pretrained /disk1/shuxun/NFTSearch/models/clip/l14_400m.pt
+
+
+# 测试shuffle=false
+export CUDA_VISIBLE_DEVICES=1,2,3,4,5,6,7
+torchrun --nproc_per_node 7 -m training.main \
+    --batch-size 430 \
+    --precision amp \
+    --workers 5 \
+    --report-to tensorboard \
+    --save-frequency 1 \
+    --logs="/disk1/shuxun/NFTSearch/models/clip/openclip_finetuning/logs" \
+    --dataset-type csv \
+    --csv-separator="," \
+    --train-data /disk1/shuxun/Dataset/NFT1000/_index/NFT1000_mini_img_caption_dict_path_training_dict.csv \
+    --csv-img-key filepath \
+    --csv-caption-key caption \
+    --warmup 1000 \
+    --lr=5e-6 \
+    --wd=0.1 \
+    --epochs=32 \
+    --model ViT-B-32 \
+    --pretrained /disk1/shuxun/NFTSearch/models/clip/ViT-B-32.pt
+    
+
+# 训练全是组件的NFT1000_mini 训练集
+export CUDA_VISIBLE_DEVICES=1,2,3,4,5,6,7
+torchrun --nproc_per_node 7 -m training.main \
+    --batch-size 430 \
+    --precision amp \
+    --workers 5 \
+    --report-to tensorboard \
+    --save-frequency 1 \
+    --logs="/disk1/shuxun/NFTSearch/models/clip/openclip_finetuning/logs" \
+    --dataset-type csv \
+    --csv-separator="," \
+    --train-data /disk1/shuxun/Dataset/NFT1000/_index/NFT1000_mini_component_caption.csv \
+    --csv-img-key filepath \
+    --csv-caption-key caption \
+    --warmup 200 \
+    --lr=5e-5 \
+    --wd=0.1 \
+    --epochs=32 \
+    --model ViT-B-32 \
+    --pretrained /disk1/shuxun/NFTSearch/models/clip/ViT-B-32.pt
+
+
+# 训练NFT1000_mini 组件和图文对混合训练集
+export CUDA_VISIBLE_DEVICES=1,2,3,4,5,6,7
+torchrun --nproc_per_node 7 -m training.main \
+    --batch-size 430 \
+    --precision amp \
+    --workers 5 \
+    --report-to tensorboard \
+    --save-frequency 1 \
+    --logs="/disk1/shuxun/NFTSearch/models/clip/openclip_finetuning/logs" \
+    --dataset-type csv \
+    --csv-separator="," \
+    --train-data /disk1/shuxun/Dataset/NFT1000/_index/NFT1000_mini_img_component_caption_training.csv \
+    --csv-img-key filepath \
+    --csv-caption-key caption \
+    --warmup 1000 \
+    --lr=1e-5 \
+    --wd=0.1 \
+    --epochs=32 \
+    --model ViT-B-32 \
+    --pretrained /disk1/shuxun/NFTSearch/models/clip/ViT-B-32.pt
+
+
+# 使用随机图层蒙版对原图进行掩盖，加上组件进行训练
+export CUDA_VISIBLE_DEVICES=2,3,4,5,6,7
+torchrun --nproc_per_node 6 -m training.main \
+    --batch-size 500 \
+    --precision amp \
+    --workers 5 \
+    --report-to tensorboard \
+    --save-frequency 1 \
+    --logs="/disk1/shuxun/NFTSearch/models/clip/openclip_finetuning/logs" \
+    --dataset-type csv \
+    --csv-separator="," \
+    --train-data /disk1/shuxun/Dataset/NFT1000/_index/NFT1000_mini_img_component_caption_training.csv \
+    --csv-img-key filepath \
+    --csv-caption-key caption \
+    --warmup 1000 \
+    --lr=3e-5 \
+    --wd=0.1 \
+    --epochs=32 \
+    --model ViT-B-32 \
+    --pretrained /disk1/shuxun/NFTSearch/models/clip/ViT-B-32.pt
+
+# 恢复训练
+torchrun --nproc_per_node 6 -m training.main \
+    --batch-size 500 \
+    --precision amp \
+    --workers 8 \
+    --report-to tensorboard \
+    --save-frequency 1 \
+    --logs="/disk1/shuxun/NFTSearch/models/clip/openclip_finetuning/logs" \
+    --dataset-type csv \
+    --csv-separator="," \
+    --train-data /disk1/shuxun/Dataset/NFT1000/_index/NFT1000_mini_img_component_caption_training.csv \
+    --csv-img-key filepath \
+    --csv-caption-key caption \
+    --warmup 1000 \
+    --lr=3e-5 \
+    --wd=0.1 \
+    --epochs=32 \
+    --model ViT-B-32 \
+    --resume /disk1/shuxun/NFTSearch/models/clip/openclip_finetuning/logs/2024_03_26-10_40_38-model_ViT-B-32-lr_3e-05-b_500-j_3-p_amp/checkpoints/epoch_13.pt

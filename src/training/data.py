@@ -8,13 +8,14 @@ import sys
 import braceexpand
 from dataclasses import dataclass
 from multiprocessing import Value
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import torch
 import torchvision.datasets as datasets
 import webdataset as wds
-from PIL import Image
+from PIL import UnidentifiedImageError, Image
 from torch.utils.data import Dataset, DataLoader, SubsetRandomSampler, IterableDataset, get_worker_info
 from torch.utils.data.distributed import DistributedSampler
 from webdataset.filters import _shuffle
@@ -25,6 +26,111 @@ try:
 except ImportError:
     hvd = None
 
+
+def load_json(json_path):
+    """
+    以只读的方式打开json文件
+
+    Args:
+        config_path: json文件路径
+
+    Returns:
+        A dictionary
+
+    """
+    try:
+
+        with open(json_path, 'r', encoding='UTF-8') as f:
+            return json.load(f)
+    except Exception as e:
+        print("Error loading json file: {}".format(json_path))
+        print(e)
+        return None
+
+def select_randomly_in_order(target_list, p):
+    """
+    以概率p顺序随机选择target_list中的元素
+
+    Args:
+        target_list: 目标列表
+        p: 选择的概率   
+
+    Returns:
+        选择后的列表
+    
+    """
+    result_list = []
+    for item in target_list:
+        if random.choices([True, False], [p, 1-p])[0]:
+            result_list.append(item)
+    return result_list
+
+def generate_mask_list_and_caption(NFT_base_path = Path("/disk1/shuxun/Dataset/NFT1000"), NFT_name, token_ID, p):
+
+    """
+    生成NFT的mask列表和caption
+
+    Args:
+        NFT_base_path: NFT的基础路径
+        NFT_name: NFT的名称
+        token_ID: NFT的token_ID
+        p: 选择的概率
+
+    Returns:
+        mask_list: 各个组件的mask列表(PIL.Image)
+        caption: caption
+    """
+
+    metadata_path = NFT_base_path.joinpath(NFT_name, "metadata", f"{token_ID}.json")
+    metadata = load_json(metadata_path)
+    caption = f"A picture of {NFT_name}, containing"
+    mask_list = []
+
+    try:
+        attributes_list = metadata["attributes"]
+
+        # 随机取出组成部分的数量
+        mask_item_list = select_randomly_in_order(attributes_list, p)
+
+        # 按到剩余的组成部分
+        rest_complement_list = [item for item in attributes_list if item not in mask_item_list]
+
+        for mask in mask_item_list:
+            component_name = mask.get("trait_type")
+            component_value = mask.get("value")
+            component_path = NFT_base_path.joinpath(NFT_name, "layers", "mask", f"{NFT_name} {component_value} {component_name}_mask.png")
+            mask_list.append(Image.open(component_path))
+
+        # 拼凑caption
+        for complement in rest_complement_list:
+            component_name = complement.get("trait_type")
+            component_value = complement.get("value")
+            caption += f" {component_value} {component_name}"
+
+        return mask_list, caption
+    
+    except:
+        attributes_list = metadata["traits"]
+
+        # 随机取出组成部分的数量
+        mask_item_list = select_randomly_in_order(attributes_list, p)
+
+        # 按到剩余的组成部分
+        rest_complement_list = [item for item in attributes_list if item not in mask_item_list]
+
+        for mask in mask_item_list:
+            component_name = mask[0]
+            component_value = mask[1]
+            component_path = NFT_base_path.joinpath(NFT_name, "layers", "mask", f"{NFT_name} {component_value} {component_name}_mask.png")
+            mask_list.append(Image.open(component_path))
+
+        # 拼凑caption
+        for complement in rest_complement_list:
+            component_name = complement[0]
+            component_value = complement[1]
+            caption += f" {component_value} {component_name}"
+
+        return mask_list, caption
 
 class CsvDataset(Dataset):
     def __init__(self, input_filename, transforms, img_key, caption_key, sep="\t", tokenizer=None):
@@ -39,13 +145,55 @@ class CsvDataset(Dataset):
         self.tokenize = tokenizer
 
     def __len__(self):
+        # 得到数据集的长度
         return len(self.captions)
 
     def __getitem__(self, idx):
-        images = self.transforms(Image.open(str(self.images[idx])))
-        texts = self.tokenize([str(self.captions[idx])])[0]
-        return images, texts
 
+        image_path = str(self.images[idx])
+        # 对图像路径进行判断
+        try:
+            with open(image_path, 'rb') as f:
+                    image = Image.open(f)
+                    images = self.transforms(image)
+                    texts = self.tokenize([str(self.captions[idx])])[0]
+        except (FileNotFoundError, UnidentifiedImageError, OSError):
+                return None
+
+        # 对图像路径进行判断，如果是组件图像，则生成读取图片和caption
+        if "layers/component" in image_path:
+            return images, texts
+        else:
+            image_path = Path(image_path)
+            token_ID = image_path.stem
+            NFT_name = image_path.parent.parent.name
+            NFT_base_path = Path("/disk1/shuxun/Dataset/NFT1000")
+            try:
+                p = 0.5
+                # 生成mask_list和caption
+                mask_list, caption = generate_mask_list_and_caption(NFT_base_path, NFT_name, token_ID, p)
+
+                # 将mask_list中的mask覆盖到原图上
+                with open(image_path, 'rb') as f:
+                    background_image = Image.open(f)
+                    for mask in mask_list:
+                        background_image.paste(mask, (0, 0), mask)
+                # 进行预处理
+                images = self.transforms(background_image)
+                texts = self.tokenize([caption])[0]
+                return images, texts
+            except: 
+                # 如果没有mask_list，则尝试直接返回原图
+                return images, texts
+
+    # def __getitem__(self, idx):
+    #     # 加上异常处理
+    #     try:
+    #         images = self.transforms(Image.open(str(self.images[idx])))
+    #         texts = self.tokenize([str(self.captions[idx])])[0]
+    #         return images, texts
+    #     except (FileNotFoundError, UnidentifiedImageError, OSError):
+    #         return None
 
 class SharedEpoch:
     def __init__(self, epoch: int = 0):
@@ -461,16 +609,23 @@ def get_csv_dataset(args, preprocess_fn, is_train, epoch=0, tokenizer=None):
     dataloader = DataLoader(
         dataset,
         batch_size=args.batch_size,
-        shuffle=shuffle,
+        # shuffle=shuffle,
+        shuffle=False, 
         num_workers=args.workers,
         pin_memory=True,
         sampler=sampler,
         drop_last=is_train,
+        collate_fn=filter_none_collate,
     )
     dataloader.num_samples = num_samples
     dataloader.num_batches = len(dataloader)
 
     return DataInfo(dataloader, sampler)
+
+# 定义一个新的 collate 函数来过滤掉 None 值
+def filter_none_collate(batch):
+    batch = [item for item in batch if item is not None]
+    return torch.utils.data.dataloader.default_collate(batch)
 
 
 class SyntheticDataset(Dataset):
