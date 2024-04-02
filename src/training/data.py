@@ -65,7 +65,7 @@ def select_randomly_in_order(target_list, p):
             result_list.append(item)
     return result_list
 
-def generate_mask_list_and_caption(NFT_base_path = Path("/disk1/shuxun/Dataset/NFT1000"), NFT_name, token_ID, p):
+def generate_mask_list_and_caption(NFT_base_path = Path("/mnt/main/baiwm/Img_Retrieval/DataSet/NFT1000"), NFT_name, token_ID, p):
 
     """
     生成NFT的mask列表和caption
